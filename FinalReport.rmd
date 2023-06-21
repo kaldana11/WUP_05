@@ -11,6 +11,7 @@ require(tigerstats)
 triUmp <-read.csv(file="triUmpsal.csv",header=TRUE)
 ```
 
+
 # Introduction
 
 <!--In this section you explain what you are trying to show.  Where did the data come from?  What is the research or other question you are trying to answer?.  If you skimp in this section expect to be marked down in your grade. Paint a picture of the project a couple of paragraphs is expected!-->
@@ -21,15 +22,50 @@ A new  preventative aides drug (triUmpsal) is under test in clinical trials. Con
 
 <!--Decide on your methods:  use "variable analysis" or other appropriate descriptors.  Make sure to choose at least one graphical method and at least one numerical method. Discuss what data manipulations may be needed for example subsetting or other binning procedures and what sort of graphical displays and inferential tools will be used!-->
 
+I need to use a filter command, form the helper cheat sheet filter to get the data out of triUmp that
+is compromised of drugs users. I will proceed to do this in the next set of codes.
+
+```{r}
+DRUGUSR <- filter(triUmp,DrugUser == "yes")
+```
+
+
 # Results
 
 <!--Divide this section into two sub-sections:  One for your descriptive  results and one for your inferential results.!-->
+
+```{r eval=FALSE}
+DRUGUSR <- DRUGUSR %>%
+mutate(across(where(is.character), as.factor))
+```
+
+
+
 
 ## Descriptive Results
 
 ### Graphical Descriptive Results
 
 <!--Graphical results here.  Make sure to show your code.  Provide appropriate labels for axes, giving units if possible, and provide a good title for the graph, too.  Use the graphical results to describe the patterns if any that exist in the data as focused toward the research question. Bottom line is to explain the features of the graph that are relevant to conforming or departing to what is expected by your null hypothesis !-->
+
+```{r}
+dd2 <- DRUGUSR %>% group_by(infected,treatment) %>% summarize(count=n()) %>% mutate(prcnt=count/sum(count))
+
+
+# the group_by followed by summarize(count=n())
+
+basicC <- ggplot(dd2,aes(x=infected,y=count,fill=treatment))
+basicC + geom_bar(stat="identity",position="dodge")
+
+#Now for percentage plot
+
+basicCC <- ggplot(dd2,aes(x=infected,y=prcnt*100,fill=treatment)) 
+basicCC + geom_bar(stat="identity", position = "dodge")
+```
+
+The first plot shows how many people got infected. It looks like it is maybe less than 100 people with AIDS. In the % plot it treats both groups in % terms. 25% of people that got AIDS have taken the drugs and 75% of people who got AIDS have got the placebo. It presents that shows the drug is working from getting AIDS. The relationship is 3rd quarters of the people have got the placebo the ration was 50/50 so the drug is preventing those who took it from getting AIDS.
+
+
 
 ### Numerical Descriptive Results
 
